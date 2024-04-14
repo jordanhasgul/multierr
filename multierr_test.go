@@ -1,44 +1,46 @@
-package multierr
+package multierr_test
 
 import (
 	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/jordanhasgul/multierr"
 )
 
 func TestError_New(t *testing.T) {
 	t.Run("zero-errors", func(t *testing.T) {
-		e := New()
-		require.Len(t, e.errs, 0)
+		e := multierr.New()
+		require.Len(t, e.Unwrap(), 0)
 	})
 
 	t.Run("one-non-nil-error", func(t *testing.T) {
-		e := New(errors.New("1"))
-		require.Len(t, e.errs, 1)
+		e := multierr.New(errors.New("1"))
+		require.Len(t, e.Unwrap(), 1)
 	})
 
 	t.Run("one-nil-error", func(t *testing.T) {
-		e := New(nil)
-		require.Len(t, e.errs, 0)
+		e := multierr.New(nil)
+		require.Len(t, e.Unwrap(), 0)
 	})
 
 	t.Run("some-non-nil-errors", func(t *testing.T) {
-		e := New(
+		e := multierr.New(
 			errors.New("1"),
 			errors.New("2"),
 			errors.New("3"),
 		)
-		require.Len(t, e.errs, 3)
+		require.Len(t, e.Unwrap(), 3)
 	})
 
 	t.Run("some-nil-errors", func(t *testing.T) {
-		e := New(
+		e := multierr.New(
 			errors.New("1"),
 			errors.New("2"),
 			nil,
 		)
-		require.Len(t, e.errs, 2)
+		require.Len(t, e.Unwrap(), 2)
 	})
 }
 
@@ -47,51 +49,51 @@ func TestError_Append(t *testing.T) {
 		t.Run("zero-errors", func(t *testing.T) {
 			var (
 				err = errors.New("1")
-				e   = Append(err)
+				e   = multierr.Append(err)
 			)
-			require.Len(t, e.errs, 1)
+			require.Len(t, e.Unwrap(), 1)
 		})
 
 		t.Run("one-non-nil-error", func(t *testing.T) {
 			var (
 				err = errors.New("1")
-				e   = Append(err, errors.New("2"))
+				e   = multierr.Append(err, errors.New("2"))
 			)
-			require.Len(t, e.errs, 2)
+			require.Len(t, e.Unwrap(), 2)
 		})
 
 		t.Run("one-nil-error", func(t *testing.T) {
 			var (
 				err = errors.New("1")
-				e   = Append(err, nil)
+				e   = multierr.Append(err, nil)
 			)
-			require.Len(t, e.errs, 1)
+			require.Len(t, e.Unwrap(), 1)
 		})
 
 		t.Run("some-non-nil-errors", func(t *testing.T) {
 			var (
 				err = errors.New("1")
-				e   = Append(
+				e   = multierr.Append(
 					err,
 					errors.New("2"),
 					errors.New("3"),
 					errors.New("4"),
 				)
 			)
-			require.Len(t, e.errs, 4)
+			require.Len(t, e.Unwrap(), 4)
 		})
 
 		t.Run("some-nil-errors", func(t *testing.T) {
 			var (
 				err = errors.New("1")
-				e   = Append(
+				e   = multierr.Append(
 					err,
 					errors.New("2"),
 					errors.New("3"),
 					nil,
 				)
 			)
-			require.Len(t, e.errs, 3)
+			require.Len(t, e.Unwrap(), 3)
 		})
 	})
 
@@ -99,135 +101,135 @@ func TestError_Append(t *testing.T) {
 		t.Run("zero-errors", func(t *testing.T) {
 			var (
 				err error
-				e   = Append(err)
+				e   = multierr.Append(err)
 			)
-			require.Len(t, e.errs, 0)
+			require.Len(t, e.Unwrap(), 0)
 		})
 
 		t.Run("one-non-nil-error", func(t *testing.T) {
 			var (
 				err error
-				e   = Append(err, errors.New("1"))
+				e   = multierr.Append(err, errors.New("1"))
 			)
-			require.Len(t, e.errs, 1)
+			require.Len(t, e.Unwrap(), 1)
 		})
 
 		t.Run("one-nil-error", func(t *testing.T) {
 			var (
 				err error
-				e   = Append(err, nil)
+				e   = multierr.Append(err, nil)
 			)
-			require.Len(t, e.errs, 0)
+			require.Len(t, e.Unwrap(), 0)
 		})
 
 		t.Run("some-non-nil-errors", func(t *testing.T) {
 			var (
 				err error
-				e   = Append(
+				e   = multierr.Append(
 					err,
 					errors.New("1"),
 					errors.New("2"),
 					errors.New("3"),
 				)
 			)
-			require.Len(t, e.errs, 3)
+			require.Len(t, e.Unwrap(), 3)
 		})
 
 		t.Run("some-nil-errors", func(t *testing.T) {
 			var (
 				err error
-				e   = Append(
+				e   = multierr.Append(
 					err,
 					errors.New("1"),
 					errors.New("2"),
 					nil,
 				)
 			)
-			require.Len(t, e.errs, 2)
+			require.Len(t, e.Unwrap(), 2)
 		})
 	})
 
 	t.Run("non-nil-multierror", func(t *testing.T) {
 		t.Run("zero-errors", func(t *testing.T) {
-			e := New(errors.New("1"))
-			e = Append(e)
-			require.Len(t, e.errs, 1)
+			e := multierr.New(errors.New("1"))
+			e = multierr.Append(e)
+			require.Len(t, e.Unwrap(), 1)
 		})
 
 		t.Run("one-non-nil-error", func(t *testing.T) {
-			e := New(errors.New("1"))
-			e = Append(e, errors.New("2"))
-			require.Len(t, e.errs, 2)
+			e := multierr.New(errors.New("1"))
+			e = multierr.Append(e, errors.New("2"))
+			require.Len(t, e.Unwrap(), 2)
 		})
 
 		t.Run("one-nil-error", func(t *testing.T) {
-			e := New(errors.New("1"))
-			e = Append(e, nil)
-			require.Len(t, e.errs, 1)
+			e := multierr.New(errors.New("1"))
+			e = multierr.Append(e, nil)
+			require.Len(t, e.Unwrap(), 1)
 		})
 
 		t.Run("some-non-nil-errors", func(t *testing.T) {
-			e := New(errors.New("1"))
-			e = Append(
+			e := multierr.New(errors.New("1"))
+			e = multierr.Append(
 				e,
 				errors.New("2"),
 				errors.New("3"),
 				errors.New("4"),
 			)
-			require.Len(t, e.errs, 4)
+			require.Len(t, e.Unwrap(), 4)
 		})
 
 		t.Run("some-nil-errors", func(t *testing.T) {
-			e := New(errors.New("1"))
-			e = Append(
+			e := multierr.New(errors.New("1"))
+			e = multierr.Append(
 				e,
 				errors.New("2"),
 				errors.New("3"),
 				nil,
 			)
-			require.Len(t, e.errs, 3)
+			require.Len(t, e.Unwrap(), 3)
 		})
 	})
 
 	t.Run("nil-multierror", func(t *testing.T) {
 		t.Run("zero-errors", func(t *testing.T) {
-			var e *Error
-			e = Append(e)
-			require.Len(t, e.errs, 0)
+			var e *multierr.Error
+			e = multierr.Append(e)
+			require.Len(t, e.Unwrap(), 0)
 		})
 
 		t.Run("one-non-nil-error", func(t *testing.T) {
-			var e *Error
-			e = Append(e, errors.New("1"))
-			require.Len(t, e.errs, 1)
+			var e *multierr.Error
+			e = multierr.Append(e, errors.New("1"))
+			require.Len(t, e.Unwrap(), 1)
 		})
 
 		t.Run("one-nil-error", func(t *testing.T) {
-			var e *Error
-			e = Append(e, nil)
-			require.Len(t, e.errs, 0)
+			var e *multierr.Error
+			e = multierr.Append(e, nil)
+			require.Len(t, e.Unwrap(), 0)
 		})
 
 		t.Run("some-non-nil-errors", func(t *testing.T) {
-			var e *Error
-			e = Append(
+			var e *multierr.Error
+			e = multierr.Append(
 				e,
 				errors.New("1"),
 				errors.New("2"),
 				errors.New("3"),
 			)
-			require.Len(t, e.errs, 3)
+			require.Len(t, e.Unwrap(), 3)
 		})
 
 		t.Run("some-nil-errors", func(t *testing.T) {
-			var e *Error
-			e = Append(
+			var e *multierr.Error
+			e = multierr.Append(
 				e,
 				errors.New("1"),
 				errors.New("2"),
 				nil,
 			)
-			require.Len(t, e.errs, 2)
+			require.Len(t, e.Unwrap(), 2)
 		})
 	})
 }
@@ -235,7 +237,7 @@ func TestError_Append(t *testing.T) {
 func TestError_Error(t *testing.T) {
 	t.Run("zero-errors", func(t *testing.T) {
 		var (
-			e      = New()
+			e      = multierr.New()
 			errStr = ""
 		)
 
@@ -244,7 +246,7 @@ func TestError_Error(t *testing.T) {
 
 	t.Run("one-error", func(t *testing.T) {
 		var (
-			e      = New(errors.New("1"))
+			e      = multierr.New(errors.New("1"))
 			errStr = "multierr: 1 error(s) occurred:\n└── 1\n"
 		)
 		require.Equal(t, errStr, e.Error())
@@ -252,13 +254,13 @@ func TestError_Error(t *testing.T) {
 
 	t.Run("some-errors", func(t *testing.T) {
 		var (
-			e = New(
+			e = multierr.New(
 				errors.New("1"),
-				New(
+				multierr.New(
 					errors.New("2"),
 					errors.New("3"),
 				),
-				New(errors.New("4")),
+				multierr.New(errors.New("4")),
 			)
 			errStr = "" +
 				"multierr: 3 error(s) occurred:\n" +
@@ -276,7 +278,7 @@ func TestError_Error(t *testing.T) {
 func TestError_Unwrap(t *testing.T) {
 	t.Run("empty-multierr", func(t *testing.T) {
 		var (
-			e    = New()
+			e    = multierr.New()
 			errs = e.Unwrap()
 		)
 		require.Empty(t, errs)
@@ -284,7 +286,7 @@ func TestError_Unwrap(t *testing.T) {
 
 	t.Run("non-empty-multierr", func(t *testing.T) {
 		var (
-			e = New(
+			e = multierr.New(
 				errors.New("1"),
 				errors.New("2"),
 				errors.New("3"),

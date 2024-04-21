@@ -114,3 +114,8 @@ func (e *Error) GoString() string {
 func (e *Error) Unwrap() []error {
 	return e.errs
 }
+
+// Len returns the number of errors that this [Error] wraps.
+func (e *Error) Len() int {
+	return len(e.errs)
+}

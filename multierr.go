@@ -112,10 +112,18 @@ func (e *Error) GoString() string {
 
 // Unwrap returns the list of errors that this [Error] wraps.
 func (e *Error) Unwrap() []error {
+	if e == nil {
+		return nil
+	}
+
 	return e.errs
 }
 
 // Len returns the number of errors that this [Error] wraps.
 func (e *Error) Len() int {
+	if e == nil {
+		return 0
+	}
+
 	return len(e.errs)
 }

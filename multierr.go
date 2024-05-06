@@ -1,5 +1,5 @@
-// Package multierr is a Go package for aggregating multiple
-// errors into a single error.
+// Package multierr is a Go package for aggregating multiple errors into
+// a single error.
 package multierr
 
 import (
@@ -12,14 +12,14 @@ import (
 	"github.com/jordanhasgul/multierr/prefix"
 )
 
-// Error is an error type that is used to aggregate multiple
-// errors into a single error.
+// Error is an error type that is used to aggregate multiple errors into
+// a single error.
 type Error struct {
 	errs []error
 }
 
-// New returns a new [Error] that contains errs. Any nil
-// errors contained within errs are removed.
+// New returns a new Error that contains errs. Any nil errors contained
+// within errs are removed.
 func New(errs ...error) *Error {
 	if len(errs) == 0 {
 		return &Error{
@@ -33,10 +33,10 @@ func New(errs ...error) *Error {
 	}
 }
 
-// Append returns a [Error] by appending errs onto err.
+// Append returns an Error by appending errs onto err.
 //
-// If err is not a [Error] then it will be turned into
-// one. Any nil errors contained within errs are removed.
+// If err is not an Error then it will be turned into one. Any nil errors
+// contained within errs are removed.
 func Append(err error, errs ...error) *Error {
 	errs = removeNilErrors(errs)
 	switch err := err.(type) {
@@ -110,7 +110,7 @@ func (e *Error) GoString() string {
 	return fmt.Sprintf("*%#v", *e)
 }
 
-// Unwrap returns the list of errors that this [Error] wraps.
+// Unwrap returns the list of errors that this Error wraps.
 func (e *Error) Unwrap() []error {
 	if e == nil {
 		return nil
@@ -119,7 +119,7 @@ func (e *Error) Unwrap() []error {
 	return e.errs
 }
 
-// Len returns the number of errors that this [Error] wraps.
+// Len returns the number of errors that this Error wraps.
 func (e *Error) Len() int {
 	if e == nil {
 		return 0

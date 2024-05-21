@@ -79,7 +79,7 @@ func (e *Error) Error() string {
 }
 
 func fprintError(currWriter, prevWriter io.Writer, e *Error) {
-	fmt.Fprintf(prevWriter, "multierr: %d error(s) occurred:\n", len(e.errs))
+	fmt.Fprintf(prevWriter, "%d error(s) occurred:\n", len(e.errs))
 
 	for i, err := range e.errs {
 		var (

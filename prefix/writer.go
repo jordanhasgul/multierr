@@ -3,41 +3,54 @@ package prefix
 import (
 	"bytes"
 	"io"
+	"unsafe"
 )
 
 var _ io.Writer = (*Writer)(nil)
 
 type Writer struct {
-	delegate io.Writer
+	writer io.Writer
 
-	buf bytes.Buffer
+	buffer bytes.Buffer
 
-	prefix      string
-	seenNewline bool
+	prefix       []byte
+	insertPrefix bool
 }
 
-func New(w io.Writer, prefix string) *Writer {
-	return &Writer{
-		delegate: w,
+type Option func(*Writer)
 
-		prefix:      prefix,
-		seenNewline: true,
+func New(w io.Writer, opts ...Option) *Writer {
+	writer := &Writer{
+		writer: w,
+	}
+	for _, opt := range opts {
+		opt(writer)
+	}
+
+	return writer
+}
+
+func WithPrefix(prefix string) Option {
+	return func(w *Writer) {
+		w.prefix = unsafe.Slice(
+			unsafe.StringData(prefix),
+			len(prefix),
+		)
+		w.insertPrefix = true
 	}
 }
 
 func (w *Writer) Write(bs []byte) (int, error) {
 	for _, b := range bs {
-		if w.seenNewline {
-			w.buf.WriteString(w.prefix)
-			w.seenNewline = false
+		if w.insertPrefix {
+			_, _ = w.buffer.Write(w.prefix)
+			w.insertPrefix = false
 		}
 
-		w.buf.WriteByte(b)
-		if b == '\n' {
-			w.seenNewline = true
-		}
+		_ = w.buffer.WriteByte(b)
+		w.insertPrefix = b == '\n'
 	}
 
-	_, err := w.buf.WriteTo(w.delegate)
+	_, err := w.buffer.WriteTo(w.writer)
 	return len(bs), err
 }

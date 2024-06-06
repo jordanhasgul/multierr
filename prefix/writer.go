@@ -31,12 +31,12 @@ func New(w io.Writer, opts ...Option) *Writer {
 }
 
 func WithPrefix(prefix string) Option {
-	return func(w *Writer) {
-		w.prefix = unsafe.Slice(
+	return func(writer *Writer) {
+		writer.prefix = unsafe.Slice(
 			unsafe.StringData(prefix),
 			len(prefix),
 		)
-		w.insertPrefix = true
+		writer.insertPrefix = true
 	}
 }
 

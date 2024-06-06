@@ -94,8 +94,8 @@ func fprintError(currWriter, prevWriter io.Writer, e *Error) {
 		switch err := err.(type) {
 		case *Error:
 			var (
-				prevWriter = prefix.New(currWriter, pipe)
-				currWriter = prefix.New(currWriter, sep)
+				prevWriter = prefix.New(currWriter, prefix.WithPrefix(pipe))
+				currWriter = prefix.New(currWriter, prefix.WithPrefix(sep))
 			)
 			fprintError(currWriter, prevWriter, err)
 		default:

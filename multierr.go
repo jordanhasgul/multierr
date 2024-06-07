@@ -61,7 +61,19 @@ func Append(err error, errs ...error) *Error {
 
 func removeNilErrors(errs []error) []error {
 	del := func(err error) bool {
-		return err == nil || reflect.ValueOf(err).IsNil()
+		if err == nil {
+			return true
+		}
+
+		var (
+			value = reflect.ValueOf(err)
+			kind  = value.Kind()
+
+			nillable = kind == reflect.Ptr || kind == reflect.UnsafePointer ||
+				kind == reflect.Func || kind == reflect.Map || kind == reflect.Slice ||
+				kind == reflect.Chan || kind == reflect.Interface
+		)
+		return nillable && value.IsNil()
 	}
 	return slices.DeleteFunc(errs, del)
 }

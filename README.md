@@ -49,8 +49,8 @@ The `errors.is` function can be used directly with a `multierr.Error` to check f
 // Assume that err is a multierr.Error
 err := someFunc()
 if err != nil {
-	if errors.Is(err, SomeError) {
-		// err contains SomeError
+    if errors.Is(err, SomeError) {
+        // err contains SomeError
     }
 }
 ```
@@ -63,9 +63,9 @@ The `errors.As` function can be used directly with a `multierr.Error` to extract
 // Assume that err is a multierr.Error
 err := someFunc()
 if err != nil {
-	var someError *SomeError
-	if errors.As(err, &someError) {
-	    	// err contains SomeError and populates someError
+    var someError *SomeError
+    if errors.As(err, &someError) {
+        // err contains SomeError and populates someError
     }
 }
 ```

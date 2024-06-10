@@ -22,15 +22,11 @@ type Error struct {
 // within errs are removed.
 func New(errs ...error) *Error {
 	if len(errs) == 0 {
-		return &Error{
-			errs: make([]error, 0),
-		}
+		return &Error{errs: make([]error, 0)}
 	}
 
 	errs = removeNilErrors(errs)
-	return &Error{
-		errs: errs,
-	}
+	return &Error{errs: errs}
 }
 
 // Append returns an Error by appending errs onto err.

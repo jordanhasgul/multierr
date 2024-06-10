@@ -17,7 +17,7 @@ func TestWrite(t *testing.T) {
 			want = ""
 
 			sb strings.Builder
-			w  = prefix.New(&sb, prefix.WithPrefix("* "))
+			w  = prefix.New(&sb, "* ")
 		)
 		_, _ = w.Write([]byte(""))
 		got := sb.String()
@@ -33,7 +33,7 @@ func TestWrite(t *testing.T) {
 				"* item 3"
 
 			sb strings.Builder
-			w  = prefix.New(&sb, prefix.WithPrefix("* "))
+			w  = prefix.New(&sb, "* ")
 		)
 		_, _ = w.Write([]byte("item 1\n"))
 		_, _ = w.Write([]byte("item 2\n"))
@@ -56,7 +56,7 @@ func BenchmarkWrite(b *testing.B) {
 		items = append(items, item)
 	}
 
-	writer := prefix.New(file, prefix.WithPrefix("* "))
+	writer := prefix.New(file, "* ")
 	for n := 0; n < b.N; n++ {
 		for _, item := range items {
 			itemBytes := unsafe.Slice(

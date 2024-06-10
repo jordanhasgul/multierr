@@ -17,26 +17,15 @@ type Writer struct {
 	insertPrefix bool
 }
 
-type Option func(*Writer)
-
-func New(w io.Writer, opts ...Option) *Writer {
-	writer := &Writer{
+func New(w io.Writer, prefix string) *Writer {
+	return &Writer{
 		writer: w,
-	}
-	for _, opt := range opts {
-		opt(writer)
-	}
 
-	return writer
-}
-
-func WithPrefix(prefix string) Option {
-	return func(writer *Writer) {
-		writer.prefix = unsafe.Slice(
+		prefix: unsafe.Slice(
 			unsafe.StringData(prefix),
 			len(prefix),
-		)
-		writer.insertPrefix = true
+		),
+		insertPrefix: true,
 	}
 }
 

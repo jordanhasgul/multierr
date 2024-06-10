@@ -21,10 +21,6 @@ type Error struct {
 // New returns a new Error that contains errs. Any nil errors contained
 // within errs are removed.
 func New(errs ...error) *Error {
-	if len(errs) == 0 {
-		return &Error{errs: make([]error, 0)}
-	}
-
 	errs = removeNilErrors(errs)
 	return &Error{errs: errs}
 }

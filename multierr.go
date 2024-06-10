@@ -72,6 +72,7 @@ func removeNilErrors(errs []error) []error {
 
 var _ error = (*Error)(nil)
 
+// Error returns the string representation of an Error.
 func (e *Error) Error() string {
 	if len(e.errs) == 0 {
 		return ""
@@ -110,6 +111,8 @@ func fprintError(currWriter, prevWriter io.Writer, e *Error) {
 
 var _ fmt.GoStringer = (*Error)(nil)
 
+// GoString prints the Go syntax for Error when passed as an operand
+// to a %#v format.
 func (e *Error) GoString() string {
 	return fmt.Sprintf("*%#v", *e)
 }

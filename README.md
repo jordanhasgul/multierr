@@ -43,7 +43,7 @@ return errs
 
 ### Checking for an error
 
-The `errors.is` function can be used directly with a `multierr.Error` to check for a specific error:
+The `errors.Is` function can be used directly with a `multierr.Error` to check for a specific error:
 
 ```go
 // Assume that err is a multierr.Error

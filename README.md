@@ -11,10 +11,18 @@ introspecting error values.
 
 ### Creating an error
 
-The `multierr.New` function is used to create a new `multierr.Error` from a list of errors.
+As per the Go proverb, the zero value of the `multierr.Error` is useful, and you can simply create 
+a `multierr.Error` as follows and begin using it:
 
 ```go
-return multierr.New(
+var err multierr.Error
+```
+
+However, if you would like to construct a `multierr.Error` from a pre-existing slice of errors, you 
+can use the `multierr.New` function instead:
+
+```go
+err := multierr.New(
     errors.New("first error"),
     errors.New("second error"),
 )

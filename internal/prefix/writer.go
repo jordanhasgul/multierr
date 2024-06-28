@@ -3,7 +3,6 @@ package prefix
 import (
 	"bytes"
 	"io"
-	"unsafe"
 )
 
 var _ io.Writer = (*Writer)(nil)
@@ -21,10 +20,7 @@ func New(w io.Writer, prefix string) *Writer {
 	return &Writer{
 		writer: w,
 
-		prefix: unsafe.Slice(
-			unsafe.StringData(prefix),
-			len(prefix),
-		),
+		prefix:       []byte(prefix),
 		insertPrefix: true,
 	}
 }

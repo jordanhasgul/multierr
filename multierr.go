@@ -9,7 +9,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/jordanhasgul/multierr/prefix"
+	"github.com/jordanhasgul/multierr/internal/prefix"
 )
 
 // Error is an error type that is used to aggregate multiple errors into

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/jordanhasgul/multierr/prefix"
+	"github.com/jordanhasgul/multierr/internal/prefix"
 	"github.com/stretchr/testify/require"
 )
 

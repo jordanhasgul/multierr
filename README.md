@@ -9,7 +9,7 @@ introspecting error values.
 
 ## Usage
 
-### Creating an error
+### Creating a multierr
 
 As per the Go proverb, the zero value of the `multierr.Error` is useful, and you can simply create 
 a `multierr.Error` as follows and begin using it:
@@ -28,7 +28,7 @@ err := multierr.New(
 )
 ```
 
-### Aggregating errors
+### Aggregating errors with multierr
 
 The `multierr.Append` function is used to aggregate multiple errors into a single error. It has 
 similar semantics to the built-in `append` function:
@@ -49,7 +49,7 @@ if err != nil {
 return errs
 ```
 
-### Checking for an error
+### Checking for an error with multierr
 
 The `errors.Is` function can be used directly with a `multierr.Error` to check for a specific error:
 
@@ -63,7 +63,7 @@ if err != nil {
 }
 ```
 
-### Extracting an error
+### Extracting an error from a multierr
 
 The `errors.As` function can be used directly with a `multierr.Error` to extract a specific error:
 

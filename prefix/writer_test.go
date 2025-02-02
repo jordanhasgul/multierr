@@ -2,12 +2,12 @@ package prefix_test
 
 import (
 	"fmt"
+	"github.com/jordanhasgul/multierr/prefix"
 	"os"
 	"strings"
 	"testing"
 	"unsafe"
 
-	"github.com/jordanhasgul/multierr/internal/prefix"
 	"github.com/stretchr/testify/require"
 )
 

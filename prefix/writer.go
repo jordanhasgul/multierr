@@ -5,8 +5,6 @@ import (
 	"io"
 )
 
-var _ io.Writer = (*Writer)(nil)
-
 type Writer struct {
 	writer io.Writer
 

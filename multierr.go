@@ -9,7 +9,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/jordanhasgul/multierr/internal/prefix"
+	"github.com/jordanhasgul/multierr/prefix"
 )
 
 // Error is an error type that is used to aggregate multiple errors into
@@ -70,10 +70,12 @@ func removeNilErrors(errs []error) []error {
 	return slices.DeleteFunc(errs, del)
 }
 
-var _ error = (*Error)(nil)
-
 // Error returns the string representation of an Error.
 func (e *Error) Error() string {
+	if e == nil {
+		return ""
+	}
+
 	if len(e.errs) == 0 {
 		return ""
 	}
@@ -107,14 +109,6 @@ func fprintError(currWriter, prevWriter io.Writer, e *Error) {
 			fmt.Fprintf(currWriter, "%s%s\n", pipe, err)
 		}
 	}
-}
-
-var _ fmt.GoStringer = (*Error)(nil)
-
-// GoString prints the Go syntax for Error when passed as an operand
-// to a %#v format.
-func (e *Error) GoString() string {
-	return fmt.Sprintf("*%#v", *e)
 }
 
 // Unwrap returns the list of errors that this Error wraps.

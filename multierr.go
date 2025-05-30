@@ -52,7 +52,7 @@ func Append(err error, errs ...error) *Error {
 }
 
 func removeNilErrors(errs []error) []error {
-	del := func(err error) bool {
+	isErrNil := func(err error) bool {
 		if err == nil {
 			return true
 		}
@@ -67,7 +67,7 @@ func removeNilErrors(errs []error) []error {
 		)
 		return nillable && value.IsNil()
 	}
-	return slices.DeleteFunc(errs, del)
+	return slices.DeleteFunc(errs, isErrNil)
 }
 
 // Error returns the string representation of an Error.
@@ -86,7 +86,7 @@ func (e *Error) Error() string {
 }
 
 func fprintError(currWriter, prevWriter io.Writer, e *Error) {
-	fmt.Fprintf(prevWriter, "%d error(s) occurred:\n", len(e.errs))
+	_, _ = fmt.Fprintf(prevWriter, "%d error(s) occurred:\n", len(e.errs))
 
 	for i, err := range e.errs {
 		var (
@@ -106,7 +106,7 @@ func fprintError(currWriter, prevWriter io.Writer, e *Error) {
 			)
 			fprintError(currWriter, prevWriter, err)
 		default:
-			fmt.Fprintf(currWriter, "%s%s\n", pipe, err)
+			_, _ = fmt.Fprintf(currWriter, "%s%s\n", pipe, err)
 		}
 	}
 }

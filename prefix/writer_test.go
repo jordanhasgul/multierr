@@ -3,52 +3,51 @@ package prefix_test
 import (
 	"fmt"
 	"github.com/jordanhasgul/multierr/prefix"
-	"os"
+	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
-	"unsafe"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestWrite(t *testing.T) {
-	t.Run("write nothing", func(t *testing.T) {
-		var (
-			want = ""
+	testCases := []struct {
+		name string
 
-			sb strings.Builder
-			w  = prefix.New(&sb, "* ")
-		)
-		_, _ = w.Write([]byte(""))
-		got := sb.String()
+		input  []string
+		output string
+	}{
+		{
+			name: "write nothing",
 
-		require.Equal(t, want, got)
-	})
+			input:  []string{},
+			output: "",
+		},
+		{
+			name: "write something",
 
-	t.Run("write something", func(t *testing.T) {
-		var (
-			want = "" +
+			input: []string{"item 1", "item 2", "item 3"},
+			output: "" +
 				"* item 1\n" +
 				"* item 2\n" +
-				"* item 3"
-
-			sb strings.Builder
-			w  = prefix.New(&sb, "* ")
-		)
-		_, _ = w.Write([]byte("item 1\n"))
-		_, _ = w.Write([]byte("item 2\n"))
-		_, _ = w.Write([]byte("item 3"))
-		got := sb.String()
-
-		require.Equal(t, want, got)
-	})
+				"* item 3\n",
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			var (
+				sb strings.Builder
+				w  = prefix.New(&sb, "* ")
+			)
+			for _, input := range testCase.input {
+				input = fmt.Sprintf("%s\n", input)
+				_, _ = w.Write([]byte(input))
+			}
+			require.Equal(t, testCase.output, sb.String())
+		})
+	}
 }
 
 func BenchmarkWrite(b *testing.B) {
 	b.ReportAllocs()
-
-	file, _ := os.CreateTemp("", "write_benchmark")
-	defer os.Remove(file.Name())
 
 	items := make([]string, 0, 100)
 	for idx := range len(items) {
@@ -56,14 +55,13 @@ func BenchmarkWrite(b *testing.B) {
 		items = append(items, item)
 	}
 
-	writer := prefix.New(file, "* ")
+	var (
+		sb strings.Builder
+		w  = prefix.New(&sb, "* ")
+	)
 	for n := 0; n < b.N; n++ {
 		for _, item := range items {
-			itemBytes := unsafe.Slice(
-				unsafe.StringData(item),
-				len(item),
-			)
-			_, _ = writer.Write(itemBytes)
+			_, _ = w.Write([]byte(item))
 		}
 	}
 }

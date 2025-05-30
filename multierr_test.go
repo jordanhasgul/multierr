@@ -9,277 +9,341 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	t.Run("zero errors", func(t *testing.T) {
-		e := multierr.New()
-		require.Equal(t, e.Len(), 0)
-	})
+	testCases := []struct {
+		name string
 
-	t.Run("one nil error", func(t *testing.T) {
-		e := multierr.New(nil)
-		require.Equal(t, e.Len(), 0)
-	})
+		input  []error
+		output int
+	}{
+		{
+			name: "with zero errors",
 
-	t.Run("one non-nil error", func(t *testing.T) {
-		e := multierr.New(errors.New("1"))
-		require.Equal(t, e.Len(), 1)
-	})
+			input:  []error{},
+			output: 0,
+		},
+		{
+			name: "with one nil error",
 
-	t.Run("some nil errors", func(t *testing.T) {
-		e := multierr.New(
-			errors.New("1"),
-			errors.New("2"),
-			nil,
-		)
-		require.Equal(t, e.Len(), 2)
-	})
+			input:  []error{nil},
+			output: 0,
+		},
+		{
+			name: "with one non-nil error",
 
-	t.Run("some non-nil errors", func(t *testing.T) {
-		e := multierr.New(
-			errors.New("1"),
-			errors.New("2"),
-			errors.New("3"),
-		)
-		require.Equal(t, e.Len(), 3)
-	})
+			input: []error{
+				errors.New("1"),
+			},
+			output: 1,
+		},
+		{
+			name: "with some nil errors",
 
+			input: []error{
+				errors.New("1"),
+				errors.New("2"),
+				nil,
+			},
+			output: 2,
+		},
+		{
+			name: "with some non-nil errors",
+
+			input: []error{
+				errors.New("1"),
+				errors.New("2"),
+				errors.New("3"),
+			},
+			output: 3,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			e := multierr.New(testCase.input...)
+			require.Equal(t, testCase.output, e.Len())
+		})
+	}
 }
 
-func TestAppend(t *testing.T) {
-	t.Run("nil error", func(t *testing.T) {
-		t.Run("zero errors", func(t *testing.T) {
-			var (
-				err error
-				e   = multierr.Append(err)
-			)
-			require.Equal(t, e.Len(), 0)
-		})
+func TestAppend_AppendToNilError(t *testing.T) {
+	testCases := []struct {
+		name string
 
-		t.Run("one nil error", func(t *testing.T) {
-			var (
-				err error
-				e   = multierr.Append(err, nil)
-			)
-			require.Equal(t, e.Len(), 0)
-		})
+		input  []error
+		output int
+	}{
+		{
+			name: "append zero errors",
 
-		t.Run("one non-nil error", func(t *testing.T) {
-			var (
-				err error
-				e   = multierr.Append(err, errors.New("1"))
-			)
-			require.Equal(t, e.Len(), 1)
-		})
+			input:  []error{},
+			output: 0,
+		},
+		{
+			name: "append one nil error",
 
-		t.Run("some nil errors", func(t *testing.T) {
-			var (
-				err error
-				e   = multierr.Append(
-					err,
-					errors.New("1"),
-					errors.New("2"),
-					nil,
-				)
-			)
-			require.Equal(t, e.Len(), 2)
-		})
+			input:  []error{nil},
+			output: 0,
+		},
+		{
+			name: "append one non-nil error",
 
-		t.Run("some non-nil errors", func(t *testing.T) {
-			var (
-				err error
-				e   = multierr.Append(
-					err,
-					errors.New("1"),
-					errors.New("2"),
-					errors.New("3"),
-				)
-			)
-			require.Equal(t, e.Len(), 3)
-		})
-	})
-
-	t.Run("non-nil error", func(t *testing.T) {
-		t.Run("zero errors", func(t *testing.T) {
-			var (
-				err = errors.New("1")
-				e   = multierr.Append(err)
-			)
-			require.Equal(t, e.Len(), 1)
-		})
-
-		t.Run("one nil error", func(t *testing.T) {
-			var (
-				err = errors.New("1")
-				e   = multierr.Append(err, nil)
-			)
-			require.Equal(t, e.Len(), 1)
-		})
-
-		t.Run("one non-nil error", func(t *testing.T) {
-			var (
-				err = errors.New("1")
-				e   = multierr.Append(err, errors.New("2"))
-			)
-			require.Equal(t, e.Len(), 2)
-		})
-
-		t.Run("some nil errors", func(t *testing.T) {
-			var (
-				err = errors.New("1")
-				e   = multierr.Append(
-					err,
-					errors.New("2"),
-					errors.New("3"),
-					nil,
-				)
-			)
-			require.Equal(t, e.Len(), 3)
-		})
-
-		t.Run("some non-nil errors", func(t *testing.T) {
-			var (
-				err = errors.New("1")
-				e   = multierr.Append(
-					err,
-					errors.New("2"),
-					errors.New("3"),
-					errors.New("4"),
-				)
-			)
-			require.Equal(t, e.Len(), 4)
-		})
-	})
-
-	t.Run("nil multierr.Error", func(t *testing.T) {
-		t.Run("zero errors", func(t *testing.T) {
-			var e *multierr.Error
-			e = multierr.Append(e)
-			require.Equal(t, e.Len(), 0)
-		})
-
-		t.Run("one non-nil error", func(t *testing.T) {
-			var e *multierr.Error
-			e = multierr.Append(e, errors.New("1"))
-			require.Equal(t, e.Len(), 1)
-		})
-
-		t.Run("one nil error", func(t *testing.T) {
-			var e *multierr.Error
-			e = multierr.Append(e, nil)
-			require.Equal(t, e.Len(), 0)
-		})
-
-		t.Run("some non-nil errors", func(t *testing.T) {
-			var e *multierr.Error
-			e = multierr.Append(
-				e,
+			input: []error{
 				errors.New("1"),
-				errors.New("2"),
-				errors.New("3"),
-			)
-			require.Equal(t, e.Len(), 3)
-		})
+			},
+			output: 1,
+		},
+		{
+			name: "append some nil errors",
 
-		t.Run("some nil errors", func(t *testing.T) {
-			var e *multierr.Error
-			e = multierr.Append(
-				e,
+			input: []error{
 				errors.New("1"),
 				errors.New("2"),
 				nil,
-			)
-			require.Equal(t, e.Len(), 2)
+			},
+			output: 2,
+		},
+		{
+			name: "append some non-nil errors",
+			input: []error{
+				errors.New("1"),
+				errors.New("2"),
+				errors.New("3"),
+			},
+			output: 3,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			e := multierr.Append(nil, testCase.input...)
+			require.Equal(t, testCase.output, e.Len())
 		})
-	})
+	}
+}
 
-	t.Run("non-nil multierr.Error", func(t *testing.T) {
-		t.Run("zero errors", func(t *testing.T) {
-			e := multierr.New(errors.New("1"))
-			e = multierr.Append(e)
-			require.Equal(t, e.Len(), 1)
-		})
+func TestAppend_AppendToNonNilError(t *testing.T) {
+	testCases := []struct {
+		name string
 
-		t.Run("one nil error", func(t *testing.T) {
-			e := multierr.New(errors.New("1"))
-			e = multierr.Append(e, nil)
-			require.Equal(t, e.Len(), 1)
-		})
+		input  []error
+		output int
+	}{
+		{
+			name: "append zero errors",
 
-		t.Run("one non-nil error", func(t *testing.T) {
-			e := multierr.New(errors.New("1"))
-			e = multierr.Append(e, errors.New("2"))
-			require.Equal(t, e.Len(), 2)
-		})
+			input:  []error{},
+			output: 1,
+		},
+		{
+			name: "append one nil error",
 
-		t.Run("some nil errors", func(t *testing.T) {
-			e := multierr.New(errors.New("1"))
-			e = multierr.Append(
-				e,
+			input:  []error{nil},
+			output: 1,
+		},
+		{
+			name: "append one non-nil error",
+
+			input: []error{
+				errors.New("2"),
+			},
+			output: 2,
+		},
+		{
+			name: "append some nil errors",
+
+			input: []error{
 				errors.New("2"),
 				errors.New("3"),
 				nil,
-			)
-			require.Equal(t, e.Len(), 3)
-		})
-
-		t.Run("some non-nil errors", func(t *testing.T) {
-			e := multierr.New(errors.New("1"))
-			e = multierr.Append(
-				e,
+			},
+			output: 3,
+		},
+		{
+			name: "append some non-nil errors",
+			input: []error{
 				errors.New("2"),
 				errors.New("3"),
 				errors.New("4"),
+			},
+			output: 4,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			var (
+				err = errors.New("1")
+				e   = multierr.Append(err, testCase.input...)
 			)
-			require.Equal(t, e.Len(), 4)
+			require.Equal(t, testCase.output, e.Len())
 		})
-	})
+	}
 }
 
-func TestError_Error(t *testing.T) {
-	t.Run("nil multierr.Error", func(t *testing.T) {
-		var (
-			e      *multierr.Error
-			errStr = ""
-		)
-		require.Equal(t, errStr, e.Error())
-	})
+func TestAppend_AppendToNilMultierr(t *testing.T) {
+	testCases := []struct {
+		name string
 
-	t.Run("non-nil multierr.Error", func(t *testing.T) {
-		t.Run("zero errors", func(t *testing.T) {
-			var (
-				e      = multierr.New()
-				errStr = ""
-			)
-			require.Equal(t, errStr, e.Error())
-		})
+		input  []error
+		output int
+	}{
+		{
+			name: "append zero errors",
 
-		t.Run("one error", func(t *testing.T) {
-			var (
-				e      = multierr.New(errors.New("1"))
-				errStr = "1 error(s) occurred:\n└── 1\n"
-			)
-			require.Equal(t, errStr, e.Error())
-		})
+			input:  []error{},
+			output: 0,
+		},
+		{
+			name: "append one nil error",
 
-		t.Run("some errors", func(t *testing.T) {
-			var (
-				e = multierr.New(
-					errors.New("1"),
-					multierr.New(
-						errors.New("2"),
-						errors.New("3"),
-					),
-					multierr.New(errors.New("4")),
-				)
-				errStr = "" +
-					"3 error(s) occurred:\n" +
-					"├── 1\n" +
-					"├── 2 error(s) occurred:\n" +
-					"│   ├── 2\n" +
-					"│   └── 3\n" +
-					"└── 1 error(s) occurred:\n" +
-					"    └── 4\n"
-			)
-			require.Equal(t, errStr, e.Error())
+			input:  []error{nil},
+			output: 0,
+		},
+		{
+			name: "append one non-nil error",
+
+			input: []error{
+				errors.New("1"),
+			},
+			output: 1,
+		},
+		{
+			name: "append some nil errors",
+
+			input: []error{
+				errors.New("1"),
+				errors.New("2"),
+				nil,
+			},
+			output: 2,
+		},
+		{
+			name: "append some non-nil errors",
+			input: []error{
+				errors.New("1"),
+				errors.New("2"),
+				errors.New("3"),
+			},
+			output: 3,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			var e *multierr.Error
+			e = multierr.Append(e, testCase.input...)
+			require.Equal(t, testCase.output, e.Len())
 		})
-	})
+	}
+}
+
+func TestAppend_AppendToNonNilMultierr(t *testing.T) {
+	testCases := []struct {
+		name string
+
+		input  []error
+		output int
+	}{
+		{
+			name: "append zero errors",
+
+			input:  []error{},
+			output: 1,
+		},
+		{
+			name: "append one nil error",
+
+			input:  []error{nil},
+			output: 1,
+		},
+		{
+			name: "append one non-nil error",
+
+			input: []error{
+				errors.New("2"),
+			},
+			output: 2,
+		},
+		{
+			name: "append some nil errors",
+
+			input: []error{
+				errors.New("2"),
+				errors.New("3"),
+				nil,
+			},
+			output: 3,
+		},
+		{
+			name: "append some non-nil errors",
+			input: []error{
+				errors.New("2"),
+				errors.New("3"),
+				errors.New("4"),
+			},
+			output: 4,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			e := multierr.New(
+				errors.New("1"),
+			)
+			e = multierr.Append(e, testCase.input...)
+			require.Equal(t, testCase.output, e.Len())
+		})
+	}
+}
+
+func TestError_ErrorOnNilMultierr(t *testing.T) {
+	var e multierr.Error
+	require.Empty(t, e.Error())
+}
+
+func TestError_ErrorOnNonNilMultierr(t *testing.T) {
+	testCases := []struct {
+		name string
+
+		input  []error
+		output string
+	}{
+		{
+			name: "append zero errors",
+
+			input:  []error{},
+			output: "",
+		},
+		{
+			name: "append one error",
+
+			input: []error{
+				errors.New("1"),
+			},
+			output: "" +
+				"1 error(s) occurred:\n" +
+				"└── 1\n",
+		},
+		{
+			name: "append some errors",
+
+			input: []error{
+				errors.New("1"),
+				multierr.New(
+					errors.New("2"),
+					errors.New("3"),
+				),
+				multierr.New(errors.New("4")),
+			},
+			output: "" +
+				"3 error(s) occurred:\n" +
+				"├── 1\n" +
+				"├── 2 error(s) occurred:\n" +
+				"│   ├── 2\n" +
+				"│   └── 3\n" +
+				"└── 1 error(s) occurred:\n" +
+				"    └── 4\n",
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			e := multierr.New(testCase.input...)
+			require.Equal(t, testCase.output, e.Error())
+		})
+	}
 }
